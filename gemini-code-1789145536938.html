@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جدول المذاكرة الأسبوعي</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: #F9F8F7;
+    color: #2C2C2B;
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 32px 16px;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #E6E5E3;
+    padding: 48px 40px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04);
+  }
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .subtitle { color: #7D7A75; font-size: 15px; margin-bottom: 32px; }
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 36px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #E6E5E3;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 24px 0 10px;
+    color: #2C2C2B;
+  }
+  .callout {
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+  .callout.blue { background: #E5F2FC; border-right: 3px solid #2783DE; }
+  .callout.green { background: #E8F1EC; border-right: 3px solid #46A171; }
+  .callout.yellow { background: #FBEBDE; border-right: 3px solid #D5803B; }
+  .callout .icon { font-size: 1.1rem; margin-left: 8px; }
+  .callout ol { margin-right: 20px; margin-top: 8px; }
+  .callout ol li { margin-bottom: 4px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  th {
+    background: #F0EFED;
+    padding: 10px 14px;
+    text-align: right;
+    font-weight: 600;
+    border: 1px solid #E6E5E3;
+    font-size: 13px;
+  }
+  td {
+    padding: 10px 14px;
+    border: 1px solid #E6E5E3;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #F9F8F7; }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .badge-blue { background: #E5F2FC; color: #2783DE; }
+  .badge-green { background: #E8F1EC; color: #2d7a52; }
+  .badge-purple { background: #F3EDFB; color: #6b3fa0; }
+  .badge-orange { background: #FEF3E2; color: #9c6a00; }
+  .badge-gray { background: #F0EFED; color: #7D7A75; }
+  hr { border: none; border-top: 1px solid #E6E5E3; margin: 32px 0; }
+
+  /* Week tracker */
+  .week-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 12px;
+  }
+  @media (max-width: 600px) { .week-grid { grid-template-columns: 1fr; } }
+  .day-card {
+    border: 1px solid #E6E5E3;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .day-card:last-child:nth-child(odd) { grid-column: span 2; }
+  @media (max-width: 600px) { .day-card:last-child:nth-child(odd) { grid-column: span 1; } }
+  .day-header {
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .day-header.sun { background: #E5F2FC; color: #1a6bb3; }
+  .day-header.mon { background: #FBEBDE; color: #a0541a; }
+  .day-header.tue { background: #E8F1EC; color: #2d7a52; }
+  .day-header.wed { background: #F3EDFB; color: #6b3fa0; }
+  .day-header.thu { background: #FEF3E2; color: #9c6a00; }
+  .day-header.fri { background: #FDECEA; color: #b83228; }
+  .day-header.sat { background: #E8EAEF; color: #3A4252; }
+  .task-list { list-style: none; padding: 12px 16px; }
+  .task-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #F0EFED;
+    cursor: pointer;
+    user-select: none;
+  }
+  .task-list li:last-child { border-bottom: none; }
+  .task-list li.done { color: #7D7A75; text-decoration: line-through; }
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 2px solid #C8C6C2;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    background: white;
+  }
+  .task-list li.done .checkbox {
+    background: #46A171;
+    border-color: #46A171;
+  }
+  .task-list li.done .checkbox::after {
+    content: '';
+    width: 10px;
+    height: 6px;
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg) translate(1px, -1px);
+    display: block;
+  }
+  .progress-bar {
+    height: 4px;
+    background: #F0EFED;
+    margin: 0 16px 12px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #46A171;
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 24px;
+    background: #F0EFED;
+    border: 1px solid #E6E5E3;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #7D7A75;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .reset-btn:hover { background: #E6E5E3; color: #2C2C2B; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="page-title">📚 جدول المذاكرة الأسبوعي</div>
+  <div class="subtitle">جدولك مبني على استراتيجية المراحل الأربع مع مراجعات وشامل نهاية الأسبوع</div>
+
+  <div class="callout blue">
+    <span class="icon">🧠</span> <strong>المراحل الأربع لكل مادة</strong>
+    <ol>
+      <li><strong>التحضير</strong> — قراءة سريعة قبل الشرح</li>
+      <li><strong>الفهم</strong> — استيعاب المعلومة الجديدة</li>
+      <li><strong>التثبيت</strong> — قراءة من الكتاب المدرسي</li>
+      <li><strong>الترسيخ</strong> — حل مسائل وتمارين</li>
+    </ol>
+  </div>
+
+  <hr>
+
+  <h2>🗓️ توزيع المواد الأسبوعي</h2>
+  <p style="font-size:14px;color:#7D7A75;margin-bottom:12px">الأيام من الأحد إلى الخميس = <strong>إنجليزي (20 د) + رياضيات (20 د) + مادة اليوم + تحضير الغد</strong></p>
+  <table>
+    <thead><tr><th>اليوم</th><th>الثابت ١</th><th>الثابت ٢</th><th>مادة اليوم</th><th>تحضير الغد</th></tr></thead>
+    <tbody>
+      <tr><td>الأحد</td><td>إنجليزي 20د</td><td>رياضيات 20د</td><td><span class="badge badge-blue">🧪 كيمياء</span></td><td>قراءة تحضير الغد 50د</td></tr>
+      <tr><td>الاثنين</td><td>إنجليزي 20د</td><td>رياضيات 20د</td><td><span class="badge badge-blue">⚡ فيزياء</span></td><td>قراءة تحضير الغد 50د</td></tr>
+      <tr><td>الثلاثاء</td><td>إنجليزي 20د</td><td>رياضيات 20د</td><td><span class="badge badge-purple">💎 إسلامية</span></td><td>قراءة تحضير الغد 50د</td></tr>
+      <tr><td>الأربعاء</td><td>إنجليزي 20د</td><td>رياضيات 20د</td><td><span class="badge badge-blue">📖 عربي</span></td><td>قراءة تحضير الغد 50د</td></tr>
+      <tr><td>الخميس</td><td>إنجليزي 20د</td><td>رياضيات 20د</td><td><span class="badge badge-green">🌍 دراسات اجتماعية</span></td><td><span class="badge badge-orange">🌴 راحة (بدون تحضير)</span></td></tr>
+      <tr><td>الجمعة</td><td colspan="4" style="text-align:center;font-weight:600"><span class="badge badge-orange">🔄 يوم مراجعة شامله (الصباح، الظهر، العصر، الليل)</span></td></tr>
+      <tr><td>السبت</td><td colspan="4" style="text-align:center;font-weight:600"><span class="badge badge-orange">🔄 يوم مراجعة واستعداد للأسبوع (الصباح، الظهر، العصر، الليل)</span></td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>🕓 الجدول اليومي للأيام العادية (الأحد — الخميس)</h2>
+  <div class="callout yellow" style="margin-bottom:14px;font-size:14px">⏰ ابدأ من الساعة 4:00 عصراً (بعد الرجوع من المدرسة والراحة)</div>
+  <table>
+    <thead><tr><th>الوقت</th><th>المادة</th><th>المرحلة</th><th>التفاصيل</th></tr></thead>
+    <tbody>
+      <tr><td>4:00 — 4:20</td><td>🔵 إنجليزي</td><td>التثبيت + الترسيخ</td><td>5د قراءة الكتاب ← 10د تمارين ← 5د مراجعة</td></tr>
+      <tr><td>4:20 — 4:40</td><td>🔵 رياضيات</td><td>التثبيت + الترسيخ</td><td>5د قراءة القانون ← 12د حل مسائل ← 3د تصحيح</td></tr>
+      <tr><td>4:40 — 4:50</td><td>🟢 مادة اليوم</td><td>التحضير</td><td>مراجعة ما قرأته بالأمس سريعاً</td></tr>
+      <tr><td>4:50 — 5:30</td><td>🟢 مادة اليوم</td><td>الفهم</td><td>ادرس الدرس الجديد بعمق (شرح، ملاحظات، فيديوهات)</td></tr>
+      <tr><td>5:30 — 5:50</td><td>🟢 مادة اليوم</td><td>التثبيت</td><td>اقرأ نفس الدرس من الكتاب المدرسي</td></tr>
+      <tr><td>5:50 — 6:20</td><td>🟢 مادة اليوم</td><td>الترسيخ</td><td>حل مسائل وأسئلة على الدرس</td></tr>
+      <tr><td>6:20 — 7:10</td><td>🟡 تحضير الغد</td><td>التحضير</td><td>قراءة خفيفة (ملاحظة: الخميس بدون هذه الفترة - وقت راحة)</td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>✔️ تتبع إنجاز الأسبوع</h2>
+  <p style="font-size:14px;color:#7D7A75;margin-bottom:16px">اضغط على أي مهمة لتحديدها كمنجزة ✅</p>
+
+  <div class="week-grid" id="weekGrid"></div>
+  <button class="reset-btn" onclick="resetAll()">🔄 إعادة تعيين الأسبوع</button>
+</div>
+
+<script>
+const days = [
+  { id: 'sun', label: 'الأحد', subject: '🧪 كيمياء', cls: 'sun', tasks: [
+    '🔵 إنجليزي (4:00 — 4:20)',
+    '🔵 رياضيات (4:20 — 4:40)',
+    '🧪 كيمياء — التحضير (4:40 — 4:50)',
+    '🧪 كيمياء — الفهم (4:50 — 5:30)',
+    '🧪 كيمياء — التثبيت (5:30 — 5:50)',
+    '🧪 كيمياء — الترسيخ (5:50 — 6:20)',
+    '🟡 تحضير الغد (6:20 — 7:10)'
+  ]},
+  { id: 'mon', label: 'الاثنين', subject: '⚡ فيزياء', cls: 'mon', tasks: [
+    '🔵 إنجليزي (4:00 — 4:20)',
+    '🔵 رياضيات (4:20 — 4:40)',
+    '⚡ فيزياء — التحضير (4:40 — 4:50)',
+    '⚡ فيزياء — الفهم (4:50 — 5:30)',
+    '⚡ فيزياء — التثبيت (5:30 — 5:50)',
+    '⚡ فيزياء — الترسيخ (5:50 — 6:20)',
+    '🟡 تحضير الغد (6:20 — 7:10)'
+  ]},
+  { id: 'tue', label: 'الثلاثاء', subject: '💎 إسلامية', cls: 'tue', tasks: [
+    '🔵 إنجليزي (4:00 — 4:20)',
+    '🔵 رياضيات (4:20 — 4:40)',
+    '💎 إسلامية — التحضير (4:40 — 4:50)',
+    '💎 إسلامية — الفهم (4:50 — 5:30)',
+    '💎 إسلامية — التثبيت (5:30 — 5:50)',
+    '💎 إسلامية — الترسيخ (5:50 — 6:20)',
+    '🟡 تحضير الغد (6:20 — 7:10)'
+  ]},
+  { id: 'wed', label: 'الأربعاء', subject: '📖 عربي', cls: 'wed', tasks: [
+    '🔵 إنجليزي (4:00 — 4:20)',
+    '🔵 رياضيات (4:20 — 4:40)',
+    '📖 عربي — التحضير (4:40 — 4:50)',
+    '📖 عربي — الفهم (4:50 — 5:30)',
+    '📖 عربي — التثبيت (5:30 — 5:50)',
+    '📖 عربي — الترسيخ (5:50 — 6:20)',
+    '🟡 تحضير الغد (6:20 — 7:10)'
+  ]},
+  { id: 'thu', label: 'الخميس', subject: '🌍 دراسات اجتماعية', cls: 'thu', tasks: [
+    '🔵 إنجليزي (4:00 — 4:20)',
+    '🔵 رياضيات (4:20 — 4:40)',
+    '🌍 دراسات — التحضير (4:40 — 4:50)',
+    '🌍 دراسات — الفهم (4:50 — 5:30)',
+    '🌍 دراسات — التثبيت (5:30 — 5:50)',
+    '🌍 دراسات — الترسيخ (5:50 — 6:20)',
+    '🌴 نصف اليوم راحة (بدون تحضير)'
+  ]},
+  { id: 'fri', label: 'الجمعة', subject: '🔄 يوم مراجعة', cls: 'fri', tasks: [
+    '🧪 كيمياء (فترة الصباح)',
+    '🇬🇧 إنجليزي (فترة الظهر)',
+    '💎 إسلامية (فترة العصر)',
+    '📖 مراجعة عامة (فترة الليل)'
+  ]},
+  { id: 'sat', label: 'السبت', subject: '🔄 يوم مراجعة واستعداد', cls: 'sat', tasks: [
+    '⚡ فيزياء (فترة الصباح)',
+    '📐 رياضيات (فترة الظهر)',
+    '📖 عربي (فترة العصر)',
+    '📝 تحضير واستعداد للغد / إنهاء الواجبات والأنشطة (فترة الليل)'
+  ]}
+];
+
+function getState() {
+  try { return JSON.parse(localStorage.getItem('schedule') || '{}'); } catch { return {}; }
+}
+function saveState(s) { localStorage.setItem('schedule', JSON.stringify(s)); }
+
+function render() {
+  const state = getState();
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  days.forEach(day => {
+    const done = state[day.id] || [];
+    const total = day.tasks.length;
+    const count = done.length;
+    const pct = Math.round(count / total * 100);
+
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    card.innerHTML = `
+      <div class="day-header ${day.cls}">${day.label} — ${day.subject}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <ul class="task-list">
+        ${day.tasks.map((t, i) => `
+          <li class="${done.includes(i) ? 'done' : ''}" data-day="${day.id}" data-i="${i}">
+            <div class="checkbox"></div>
+            <span>${t}</span>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('.task-list li').forEach(li => {
+    li.addEventListener('click', () => {
+      const s = getState();
+      const d = li.dataset.day;
+      const i = parseInt(li.dataset.i);
+      if (!s[d]) s[d] = [];
+      const idx = s[d].indexOf(i);
+      if (idx === -1) s[d].push(i); else s[d].splice(idx, 1);
+      saveState(s);
+      render();
+    });
+  });
+}
+
+function resetAll() {
+  if (confirm('هل تريد إعادة تعيين كل الأسبوع؟')) {
+    localStorage.removeItem('schedule');
+    render();
+  }
+}
+
+render();
+</script>
+</body>
+</html>
